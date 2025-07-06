@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getContacts, saveContacts } from "@/lib/utils";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function ContactDetail() {
   const { id } = useParams();
@@ -22,10 +25,7 @@ export default function ContactDetail() {
   const validate = () => {
     const newErrors = {};
 
-    if (!contact.name.trim()) {
-      newErrors.name = "Name is required.";
-    }
-
+    if (!contact.name.trim()) newErrors.name = "Name is required.";
     if (!contact.email.trim()) {
       newErrors.email = "Email is required.";
     } else if (!/^[\w.-]+@[\w.-]+\.\w{2,}$/.test(contact.email)) {
@@ -38,13 +38,8 @@ export default function ContactDetail() {
       newErrors.phone = "Phone must be a number with at least 10 digits.";
     }
 
-    if (!contact.address.trim()) {
-      newErrors.address = "Address is required.";
-    }
-
-    if (!contact.dob.trim()) {
-      newErrors.dob = "Date of birth is required.";
-    }
+    if (!contact.address.trim()) newErrors.address = "Address is required.";
+    if (!contact.dob.trim()) newErrors.dob = "Date of birth is required.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -57,7 +52,6 @@ export default function ContactDetail() {
 
   const handleSave = () => {
     if (!validate()) return;
-
     const updated = allContacts.map((c) =>
       c.id === contact.id ? contact : c
     );
@@ -73,29 +67,26 @@ export default function ContactDetail() {
       <h1 className="text-2xl font-bold mb-4">Edit Contact</h1>
       <form className="space-y-4">
         {["name", "email", "phone", "address", "dob"].map((field) => (
-          <div key={field}>
-            <label className="block capitalize mb-1">{field}</label>
-            <input
-              className={`border w-full p-2 rounded ${
-                errors[field] ? "border-red-500" : "border-gray-300"
-              }`}
+          <div key={field} className="space-y-1">
+            <Label htmlFor={field} className="capitalize">
+              {field}
+            </Label>
+            <Input
+              id={field}
               name={field}
               value={contact[field]}
               onChange={handleChange}
+              className={errors[field] ? "border-red-500" : ""}
             />
             {errors[field] && (
-              <p className="text-sm text-red-500 mt-1">{errors[field]}</p>
+              <p className="text-sm text-red-500">{errors[field]}</p>
             )}
           </div>
         ))}
 
-        <button
-          type="button"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleSave}
-        >
+        <Button type="button" onClick={handleSave}>
           Save
-        </button>
+        </Button>
       </form>
     </div>
   );
